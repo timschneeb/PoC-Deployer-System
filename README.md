@@ -1,5 +1,12 @@
 # PoC-Deployer-System
 
+**Fork with English translation**
+
+An Android privilege escalation application based on CVE-2024-31317, integrated with Termux terminal emulator features.
+
+See [README_ENG.md](README_ENG.md) for an English version of this README.
+_____________________
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 一个基于CVE-2024-31317的Android提权漏洞应用程序，集成了Termux终端模拟器功能。
