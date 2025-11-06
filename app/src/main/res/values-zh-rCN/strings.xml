@@ -135,7 +135,7 @@
 请将你遇到的问题反馈至：wqry085super@gmail.com</string>
     <string name="plugin_action_message">你希望如何处理该插件？</string>
     <string name="rish_file_missing">未找到 rish 文件，请更新扩展包以使用 Shizuku 功能</string>
-    <string name="rish_update_command">rm -rf %1$s/terminal_env ; echo 现在重新进入终端模拟器以完成更新</string>
+    <string name="rish_update_finished">现在重新进入终端模拟器以完成更新</string>
     <string name="download_complete_message">%1$s 下载完成！</string>
     <string name="download_failed">下载失败</string>
     <string name="close">关闭</string>

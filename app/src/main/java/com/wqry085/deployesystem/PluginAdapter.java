@@ -129,7 +129,8 @@ builder.setPositiveButton(context.getString(R.string.execute_directly), (dialog,
                 .setMessage(context.getString(R.string.rish_file_missing))
                 .setPositiveButton(context.getString(R.string.update_extension_package), (dialog1, which1) -> {
                     Intent intent = new Intent(context, TerminalActivity.class);
-                    intent.putExtra("one_time_command", context.getString(R.string.rish_update_command, context.getFilesDir().getAbsolutePath()));
+                    intent.putExtra("one_time_command", "rm -rf " + context.getFilesDir().getAbsolutePath() + "/terminal_env ; " +
+                                    "echo \"" + context.getString(R.string.rish_update_finished) + "\"");
                     context.startActivity(intent);
                 })
                 .setNegativeButton(context.getString(R.string.cancel), null)
