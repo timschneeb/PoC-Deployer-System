@@ -29,22 +29,29 @@ public class AboutActivity extends AbsAboutActivity {
     @Override
     protected void onItemsCreated(@NonNull List<Object> items) {
         // 关于应用
-        items.add(new Category("关于应用"));
-        items.add(new Card("漏洞 CVE-2024-31317 使用工具"));
-        items.add(new Card("此版本为测试版，目的是收集报告。\n" +
-                "请将你遇到的问题反馈至：wqry085super@gmail.com"));
+        items.add(new Category(getString(R.string.about_app)));
+        items.add(new Card(getString(R.string.tool_description)));
+        items.add(new Card(getString(R.string.feedback_message)));
 
         // 开发者信息
-        items.add(new Category("开发者"));
+        items.add(new Category(getString(R.string.developer)));
         items.add(new Contributor(
                 R.drawable.ic_wa,
                 "wqry085",
-                "开发者酷安主页",
+                getString(R.string.developer_home),
                 "http://www.coolapk.com/u/21820733"
         ));
 
+        items.add(new Category(getString(R.string.contributor)));
+        items.add(new Contributor(
+                R.drawable.ic_launcher_foreground,
+                "timschneeb",
+                getString(R.string.developer_home),
+                "https://github.com/timschneeb"
+        ));
+
         // 项目信息
-        items.add(new Category("项目"));
+        items.add(new Category(getString(R.string.project)));
         items.add(new License(
                 "PoC-Deployer-System",
                 "wqry085",

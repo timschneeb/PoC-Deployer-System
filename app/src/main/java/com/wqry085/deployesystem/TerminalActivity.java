@@ -356,8 +356,8 @@ public class TerminalActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Environment not deployed or verification failed. Starting deployment.");
                 runOnUiThread(() -> {
-                    executeCommand("echo '=== 正在部署终端环境 ==='");
-                    executeCommand("echo '请稍候，这可能需要一些时间...'");
+                    executeCommand(String.format("echo '%s'", getString(R.string.deploying_terminal_env)));
+                    executeCommand(String.format("echo '%s'", getString(R.string.please_wait)));
                 });
 
                 boolean success = deployEnvironment(envDir);
@@ -365,14 +365,14 @@ public class TerminalActivity extends AppCompatActivity {
                 if (success && verifyDeployment(envDir)) {
                     Log.d(TAG, "Deployment successful and verified.");
                     runOnUiThread(() -> {
-                        executeCommand("echo '=== 部署完成 ==='");
+                        executeCommand(String.format("echo '%s'", getString(R.string.deploy_complete)));
                         mHandler.postDelayed(this::switchToEnhancedSession, 1000);
                     });
                 } else {
                     Log.e(TAG, "Deployment or verification failed.");
                     runOnUiThread(() -> {
-                        executeCommand("echo '=== 环境部署失败 ==='");
-                        executeCommand("echo '您当前处于基础系统模式。'");
+                        executeCommand(String.format("echo '%s'", getString(R.string.deploy_failed)));
+                        executeCommand(String.format("echo '%s'", getString(R.string.basic_system_mode)));
                         // 如果是一次性命令模式，即使在基础模式下也尝试执行命令
                         if (mIsOneTimeCommandMode) {
                             mHandler.postDelayed(this::executeOneTimeCommand, 1000);
@@ -514,7 +514,7 @@ public class TerminalActivity extends AppCompatActivity {
         // 最终安全检查
         if (!verifyDeployment(envDir)) {
             Log.e(TAG, "Enhanced environment verification failed! Staying in bootstrap.");
-            executeCommand("echo '错误：增强环境验证失败，保持基础模式'");
+            executeCommand(String.format("echo '%s'", getString(R.string.enhanced_env_verify_failed)));
             // 如果是一次性命令模式，即使在基础模式下也尝试执行命令
             if (mIsOneTimeCommandMode) {
                 mHandler.postDelayed(this::executeOneTimeCommand, 1000);

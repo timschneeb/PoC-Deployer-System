@@ -34,14 +34,14 @@
 
         <Button
             android:id="@+id/pluginDownload"
-            android:text="下载"
+            android:text="@string/download"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/pluginExecute"
-            android:text="执行或分享打开"
+            android:text="@string/execute_or_share_open"
             android:layout_marginTop="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

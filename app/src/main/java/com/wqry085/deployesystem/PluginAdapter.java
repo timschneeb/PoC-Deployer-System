@@ -57,7 +57,7 @@ public class PluginAdapter extends RecyclerView.Adapter<PluginAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PluginItem plugin = pluginList.get(position);
-        holder.name.setText(plugin.name + "  v" + plugin.version);
+        holder.name.setText(context.getString(R.string.plugin_name_version, plugin.name, plugin.version));
         holder.description.setText(plugin.description);
 
         holder.itemView.setClickable(true);
@@ -78,15 +78,15 @@ public class PluginAdapter extends RecyclerView.Adapter<PluginAdapter.ViewHolder
 
         holder.executeButton.setOnClickListener(v -> {
     if (!file.exists()) {
-        Toast.makeText(context, "插件文件不存在", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, context.getString(R.string.plugin_file_not_exist), Toast.LENGTH_SHORT).show();
         notifyItemChanged(position);
         return;
     }
 
     // 弹窗选择执行方式
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-builder.setTitle("选择操作方式");
-builder.setMessage("你希望如何处理该插件？");
+builder.setTitle(context.getString(R.string.select_action_mode));
+builder.setMessage(context.getString(R.string.plugin_action_message));
 
 // 动态创建多选框
 final boolean[] useShizuku = {false};
@@ -96,7 +96,7 @@ layout.setOrientation(LinearLayout.HORIZONTAL);
 layout.setPadding(50, 30, 50, 30);
 
 CheckBox checkBox = new CheckBox(context);
-checkBox.setText("使用 Shizuku 权限执行");
+checkBox.setText(context.getString(R.string.use_shizuku_permission));
 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
     useShizuku[0] = isChecked;
 });
@@ -104,7 +104,7 @@ checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 layout.addView(checkBox);
 
 TextView hintText = new TextView(context);
-hintText.setText("需要已安装并授权 Shizuku");
+hintText.setText(context.getString(R.string.need_shizuku_installed));
 hintText.setTextSize(12);
 hintText.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -116,23 +116,23 @@ layout.addView(hintText);
 builder.setView(layout);
 
 // 其余按钮代码保持不变...
-builder.setPositiveButton("直接执行", (dialog, which) -> {
-    Toast.makeText(context, "执行插件中", Toast.LENGTH_SHORT).show();
-    
+builder.setPositiveButton(context.getString(R.string.execute_directly), (dialog, which) -> {
+    Toast.makeText(context, context.getString(R.string.executing_plugin), Toast.LENGTH_SHORT).show();
+
     String command = "/system/bin/sh '" + file.getPath() + "'";
     
     if (useShizuku[0]) {
         File rishFile = new File(context.getFilesDir().getAbsolutePath() + "/terminal_env/bin/rish");                    
         if (!rishFile.exists()) {
             new AlertDialog.Builder(context)
-                .setTitle("缺少必要文件")
-                .setMessage("未找到 rish 文件，请更新扩展包以使用 Shizuku 功能")
-                .setPositiveButton("更新扩展包", (dialog1, which1) -> {
+                .setTitle(context.getString(R.string.missing_required_file))
+                .setMessage(context.getString(R.string.rish_file_missing))
+                .setPositiveButton(context.getString(R.string.update_extension_package), (dialog1, which1) -> {
                     Intent intent = new Intent(context, TerminalActivity.class);
-        intent.putExtra("one_time_command","rm -rf "+context.getFilesDir().getAbsolutePath()+"/terminal_env ; echo 现在重新进入终端模拟器以完成更新");
-        context.startActivity(intent);    
+                    intent.putExtra("one_time_command", context.getString(R.string.rish_update_command, context.getFilesDir().getAbsolutePath()));
+                    context.startActivity(intent);
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(context.getString(R.string.cancel), null)
                 .show();
             return;
         }
@@ -148,11 +148,11 @@ builder.setPositiveButton("直接执行", (dialog, which) -> {
     }
 });
 
-builder.setNeutralButton("分享到其他应用", (dialog, which) -> {
+builder.setNeutralButton(context.getString(R.string.share_to_other_apps), (dialog, which) -> {
     // 分享代码保持不变...
 });
 
-builder.setNegativeButton("取消", null);
+builder.setNegativeButton(context.getString(R.string.cancel), null);
 builder.show();
 });
     }
@@ -162,7 +162,7 @@ builder.show();
 
         mainHandler.post(() -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("下载中").setCancelable(false);
+            builder.setTitle(context.getString(R.string.downloading)).setCancelable(false);
 
             ProgressBar progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setMax(100);
@@ -215,9 +215,9 @@ builder.show();
             mainHandler.post(() -> {
                 dialog.dismiss();
                 AlertDialog finishedDialog = new AlertDialog.Builder(context)
-                        .setTitle("下载完成")
-                        .setMessage(plugin.name + " 下载完成！")
-                        .setPositiveButton("确定", null)
+                        .setTitle(context.getString(R.string.download_complete_title))
+                        .setMessage(context.getString(R.string.download_complete_message, plugin.name))
+                        .setPositiveButton(context.getString(R.string.ok), null)
                         .create();
                 finishedDialog.show();
 
@@ -228,7 +228,7 @@ builder.show();
             e.printStackTrace();
             mainHandler.post(() -> {
                 dialog.dismiss();
-                Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.download_failed), Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -247,10 +247,10 @@ public static void ShizukuExecWithDialog(Context context, String cmd) {
     layout.addView(scrollView);
 
     AlertDialog dialog = new AlertDialog.Builder(context)
-            .setTitle("执行插件中")
+            .setTitle(context.getString(R.string.executing_plugin))
             .setView(layout)
             .setCancelable(false)
-            .setNegativeButton("关闭", (d, which) -> d.dismiss())
+            .setNegativeButton(context.getString(R.string.close), (d, which) -> d.dismiss())
             .create();
     dialog.show();
 
@@ -284,7 +284,7 @@ public static void ShizukuExecWithDialog(Context context, String cmd) {
             }
 
             int exitCode = p.waitFor();
-            handler.post(() -> outputText.append("\n命令结束, exitCode: " + exitCode));
+            handler.post(() -> outputText.append(context.getString(R.string.command_end_exit_code, exitCode)));
 
         } catch (Exception e) {
             Handler handler = new Handler(Looper.getMainLooper());

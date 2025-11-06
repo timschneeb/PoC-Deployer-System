@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.wqry085.deployesystem.R;
 import com.wqry085.deployesystem.ZygoteActivity;
 
 import java.io.BufferedReader;
@@ -103,7 +104,7 @@ public class BootLoader extends AppCompatActivity {
 
         // 标题栏
         TextView titleBar = new TextView(this);
-        titleBar.setText("引导加载");
+        titleBar.setText(getString(R.string.bootloader_title));
         titleBar.setTextSize(20f);
         titleBar.setPadding(dp(16), dp(48), dp(16), dp(12));
         root.addView(titleBar);
@@ -128,7 +129,7 @@ public class BootLoader extends AppCompatActivity {
         center.addView(progressIndicator);
 
         loadingText = new TextView(this);
-        loadingText.setText("初始化中...");
+        loadingText.setText(getString(R.string.bootloader_initializing));
         loadingText.setTextSize(16f);
         loadingText.setGravity(Gravity.CENTER);
         loadingText.setPadding(0, dp(20), 0, 0);
@@ -138,7 +139,7 @@ public class BootLoader extends AppCompatActivity {
 
         // 底部小提示
         TextView bottom = new TextView(this);
-        bottom.setText("PoC Deployer System");
+        bottom.setText(R.string.app_name);
         bottom.setTextSize(12f);
         bottom.setGravity(Gravity.CENTER);
         bottom.setPadding(dp(16), dp(8), dp(16), dp(16));
@@ -168,7 +169,7 @@ public class BootLoader extends AppCompatActivity {
                     == PackageManager.PERMISSION_GRANTED) {
                 
                 storagePermissionGranted = true;
-                updateLoadingText("存储权限已获取");
+                updateLoadingText(getString(R.string.storage_permission_granted));
                 proceedWithShizukuCheck();
                 return;
             }
@@ -182,13 +183,13 @@ public class BootLoader extends AppCompatActivity {
                     STORAGE_PERMISSION_REQUEST_CODE);
             
             // 继续流程，不等待权限结果
-            updateLoadingText("正在处理 Shizuku 权限...");
+            updateLoadingText(getString(R.string.processing_shizuku_permission));
             proceedWithShizukuCheck();
             
         } else {
             // Android 6.0 以下自动拥有权限
             storagePermissionGranted = true;
-            updateLoadingText("存储权限已获取");
+            updateLoadingText(getString(R.string.storage_permission_granted));
             proceedWithShizukuCheck();
         }
     }
@@ -201,22 +202,22 @@ public class BootLoader extends AppCompatActivity {
             boolean shizukuOk = requestShizukuPermissionSafe(BootLoader.this);
             if (!shizukuOk) {
                 mainHandler.post(() -> {
-                    updateLoadingText("\n请在 Shizuku Manager 中授权后重启此界面。");
+                    updateLoadingText(getString(R.string.shizuku_grant_prompt));
                     isProcessing = false;
                 });
                 return;
             }
 
-            mainHandler.post(() -> updateLoadingText("\nShizuku 权限检查通过，开始检测设备可用性..."));
+            mainHandler.post(() -> updateLoadingText(getString(R.string.shizuku_permission_check_passed)));
 
             boolean vulnerable = cve_2024_31317(BootLoader.this);
             lastCheckResult = vulnerable;
 
             mainHandler.post(() -> {
                 if (vulnerable) {
-                    updateLoadingText("\n检测结果: 设备可能存在漏洞（可利用）");
+                    updateLoadingText(getString(R.string.vulnerable_result));
                 } else {
-                    updateLoadingText("\n检测结果: 漏洞已修复");
+                    updateLoadingText(getString(R.string.patched_result));
                 }
 
                 // 提示用户选择下次启动方式（只出现一次）
@@ -261,10 +262,10 @@ public class BootLoader extends AppCompatActivity {
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("选择启动方式")
-                .setMessage("您希望下次启动时直接进入 荷载控制台 吗？")
-                .setCancelable(false) // 用户必须选择
-                .setPositiveButton("是下次直接进入", (dialog, which) -> {
+                .setTitle(getString(R.string.next_boot_mode_title))
+                .setMessage(getString(R.string.next_boot_mode_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.next_boot_mode_positive), (dialog, which) -> {
                     // 保存用户选择
                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                             .edit()
@@ -272,17 +273,17 @@ public class BootLoader extends AppCompatActivity {
                             .putBoolean("hasAsked", true)
                             .apply();
 
-                    updateLoadingText("\n已保存选择，即将跳转...");
+                    updateLoadingText(getString(R.string.next_boot_saved));
                     mainHandler.postDelayed(() -> navigateToZygoteActivity(lastCheckResult), 2000);
                 })
-                .setNegativeButton("否下次保留引导加载", (dialog, which) -> {
+                .setNegativeButton(getString(R.string.next_boot_mode_negative), (dialog, which) -> {
                     // 只标记已询问，不跳过
                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                             .edit()
                             .putBoolean("hasAsked", true)
                             .apply();
 
-                    updateLoadingText("\n即将跳转...");
+                    updateLoadingText(getString(R.string.next_boot_not_skipped));
                     mainHandler.postDelayed(() -> navigateToZygoteActivity(lastCheckResult), 2000);
                 })
                 .setOnDismissListener(dialog -> {
@@ -338,7 +339,7 @@ public class BootLoader extends AppCompatActivity {
             process.waitFor();
             return !found;
         } catch (IOException | InterruptedException e) {
-            mainHandler.post(() -> updateLoadingText("\n检查失败: " + e.getMessage()));
+            mainHandler.post(() -> updateLoadingText(getString(R.string.check_failed, e.getMessage())));
             return false;
         } finally {
             if (reader != null) {
@@ -387,9 +388,9 @@ public class BootLoader extends AppCompatActivity {
         if (requestCode == SHIZUKU_REQUEST_CODE) {
             // 处理 Shizuku 权限请求结果
             if (resultCode == RESULT_OK) {
-                updateLoadingText("Shizuku 权限已授予");
+                updateLoadingText(getString(R.string.shizuku_granted));
             } else {
-                updateLoadingText("Shizuku 权限被拒绝");
+                updateLoadingText(getString(R.string.shizuku_denied));
             }
         }
     }

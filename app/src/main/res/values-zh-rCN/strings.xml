@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PoC-Deployer-System</string>
-
     <string name="bootloader_title">引导加载</string>
     <string name="bootloader_initializing">初始化中...</string>
     <string name="storage_permission_granted">存储权限已获取</string>

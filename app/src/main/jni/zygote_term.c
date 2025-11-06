@@ -678,7 +678,7 @@ int main(int argc, char *argv[]) {
         printf("Control server started with PID: %d\n", control_pid);
     }
 
-    printf("启动远程终端成功 (主PID: %d)\n", getpid());
+    printf("Remote terminal started successfully (Primary PID: %d)\n", getpid());
     
     signal(SIGTERM, sigterm_handler);
     
@@ -686,7 +686,7 @@ int main(int argc, char *argv[]) {
     while (!control_system.should_terminate) {
         pid_t ended_pid = waitpid(-1, &status, WNOHANG);
         if (ended_pid > 0) {
-            printf("子进程 %d 已结束\n", ended_pid);
+            printf("Child process %d has ended\n", ended_pid);
         }
         sleep(1);
     }

@@ -3,10 +3,10 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@android:drawable/ic_menu_view"
-        android:title="荷载" />
+        android:title="@string/nav_home_title" />
 
     <item
         android:id="@+id/nav_second"
         android:icon="@android:drawable/ic_menu_manage"
-        android:title="云端插件" />
+        android:title="@string/nav_second_title" />
 </menu>

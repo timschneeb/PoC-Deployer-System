@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.widget.Toast;
 import androidx.core.content.FileProvider;
 import com.wqry085.deployesystem.MaterialDialogHelper;
+import com.wqry085.deployesystem.R;
 import com.wqry085.deployesystem.ZygoteFragment;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -65,12 +66,12 @@ public class runpayload extends Activity {
                             tmp
                     );
                 } catch (Exception e) {
-                    Toast.makeText(this, "无法创建临时文件", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cannot_create_temp_file), Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
             } else {
-                Toast.makeText(this, "未接收到文件或文本", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.no_file_or_text_received), Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
@@ -171,11 +172,11 @@ public class runpayload extends Activity {
         }
         
         new AlertDialog.Builder(this)
-                .setTitle("确定要加载第三方？")
-                .setMessage("payload路径来源：" + fileUri.toString())
+                .setTitle(getString(R.string.confirm_title))
+                .setMessage(String.format(getString(R.string.confirm_message), fileUri.toString()))
                 .setCancelable(false)
-                .setPositiveButton("运行payload", (dialog, which) -> handleFile())
-                .setNegativeButton("取消", (dialog, which) -> {
+                .setPositiveButton(getString(R.string.run_payload), (dialog, which) -> handleFile())
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
                     dialog.dismiss();
                     finish();
                 })
@@ -193,7 +194,7 @@ public class runpayload extends Activity {
 
                 if (inputStream == null) {
                     if (!fromAdbShell) {
-                        runOnUiThread(() -> Toast.makeText(this, "无法打开文件", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(this, getString(R.string.cannot_open_file), Toast.LENGTH_SHORT).show());
                     }
                     runOnUiThread(this::finish);
                     return;
@@ -210,7 +211,7 @@ public class runpayload extends Activity {
             } catch (Exception e) {
                 if (!fromAdbShell) {
                     final String msg = e.getMessage();
-                    runOnUiThread(() -> Toast.makeText(this, "读取失败: " + msg, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, getString(R.string.read_failed, msg), Toast.LENGTH_SHORT).show());
                 }
                 runOnUiThread(this::finish);
                 return;
@@ -224,7 +225,7 @@ public class runpayload extends Activity {
 
                 } catch (Exception e) {
                     if (!fromAdbShell) {
-                        Toast.makeText(this, "处理失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.process_failed, e.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 } finally {
                     finish();
@@ -251,11 +252,11 @@ public class runpayload extends Activity {
         try {
             getContentResolver().insert(Uri.parse("content://settings/global"), values);
             if (!fromAdbShell) {
-                Toast.makeText(this, "payload 加载成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.payload_loaded_success), Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             if (!fromAdbShell) {
-                MaterialDialogHelper.showSimpleDialog(this, "加载payload失败", e.toString());
+                MaterialDialogHelper.showSimpleDialog(this, getString(R.string.load_payload_failed), e.toString());
             }
         }
         
@@ -287,8 +288,8 @@ public class runpayload extends Activity {
             );
             
             // 写入 base64 编码的内容
-            ShizukuExec("echo '" + base64Payload + "' | base64 -d > /data/local/tmp/只读配置.txt");
-            
+            ShizukuExec("echo '" + base64Payload + "' | base64 -d > /data/local/tmp/" + getString(R.string.readonly_config_filename) + "");
+
         } catch (Exception e) {
             // 如果 base64 方法失败，回退到 printf 方法
             writePayloadWithPrintf(payload);
@@ -309,15 +310,15 @@ public class runpayload extends Activity {
                 .replace("\"", "\\\"");   // 转义双引号
             
             // 使用 printf 写入，保持所有格式
-            ShizukuExec("printf '%s' '" + escapedPayload + "' > /data/local/tmp/只读配置.txt");
-            
+            ShizukuExec("printf '%s' '" + escapedPayload + "' > /data/local/tmp/" + getString(R.string.readonly_config_filename) + "");
+
         } catch (Exception e) {
             // 最后尝试直接 echo
-            ShizukuExec("echo \"$(" + payload + ")\" > /data/local/tmp/只读配置.txt");
+            ShizukuExec("echo \"$(" + payload + ")\" > /data/local/tmp/" + getString(R.string.readonly_config_filename) + "");
         }
     }
 
-    public static String ShizukuExec(String cmd) {
+    public String ShizukuExec(String cmd) {
         StringBuilder output = new StringBuilder();
         try {
             Process p = Shizuku.newProcess(new String[]{"sh"}, null, null);
@@ -337,7 +338,7 @@ public class runpayload extends Activity {
 
             int exitCode = p.waitFor();
             if (exitCode != 0) {
-                output.append("漏洞部署结束: ").append(exitCode);
+                output.append(getString(R.string.vuln_deploy_end)).append(exitCode);
             }
             return output.toString();
         } catch (Exception e) {

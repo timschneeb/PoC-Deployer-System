@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:text="正在加载插件列表..."
+                android:text="@string/loading_plugin_list"
                 android:layout_marginTop="8dp"
                 android:textSize="16sp"
                 android:layout_width="wrap_content"
@@ -43,14 +43,14 @@
             android:visibility="gone">
 
             <TextView
-                android:text="加载失败，请检查网络"
+                android:text="@string/load_failed_check_network"
                 android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
             <Button
                 android:id="@+id/retryButton"
-                android:text="重试"
+                android:text="@string/retry"
                 android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

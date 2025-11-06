@@ -50,7 +50,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="高危漏洞利用工具"
+                        android:text="@string/high_risk_tool"
                         android:textAppearance="?attr/textAppearanceLabelMedium"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
@@ -70,7 +70,7 @@
                         android:layout_width="match_parent"
                         android:id="@+id/text"
                         android:layout_height="wrap_content"
-                        android:text="9981信息"
+                        android:text="@string/info_9981"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="?attr/colorOnSurface" />
                 </ScrollView>
@@ -85,7 +85,7 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="自定义IP地址默认127.0.0.1"
+                        android:text="@string/custom_ip_default"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="?attr/colorOnSurface" />
                     <com.google.android.material.materialswitch.MaterialSwitch
@@ -125,7 +125,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="启动"
+                        android:text="@string/start"
                          />
 
                     <com.google.android.material.button.MaterialButton
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="16dp"
-                        android:text="停止"
+                        android:text="@string/stop"
                      />
                 </LinearLayout>
 
@@ -146,7 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="运行注入zYg0te命令"
+                    android:text="@string/run_zygote_command"
                     android:textColor="?attr/colorOnError"
                     app:backgroundTint="?attr/colorError"
                     />
@@ -157,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="关于"
+                    android:text="@string/about"
                      />
             </LinearLayout>
         </ScrollView>
@@ -170,7 +170,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="漏洞部署"
+        android:text="@string/deploy_vuln"
         app:backgroundTint="?attr/colorErrorContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:strokeColor="?attr/colorError"

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.wqry085.deployesystem.R;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,7 +41,7 @@ public class FolderReceiver {
     
     public void startReceiving() {
         if (isReceiving) {
-            showToast("接收服务已在运行中");
+            showToast(context.getString(R.string.received_service_running));
             return;
         }
         
@@ -47,9 +50,9 @@ public class FolderReceiver {
     
     private void startReceivingInternal() {
         isReceiving = true;
-        showWaitingDialog("等待客户端连接端口 " + PORT + "...");
-        Log.i(TAG, "开始监听端口 " + PORT);
-        
+        showWaitingDialog(context.getString(R.string.waiting_client_connection, PORT));
+        Log.i(TAG, context.getString(R.string.start_listen_port, PORT));
+
         try {
             serverSocket = new ServerSocket(PORT);
             serverSocket.setSoTimeout(1000); // 1秒超时，用于检查取消状态
@@ -57,8 +60,8 @@ public class FolderReceiver {
             while (isReceiving) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    Log.i(TAG, "客户端已连接: " + clientSocket.getInetAddress());
-                    
+                    Log.i(TAG, context.getString(R.string.client_connected, clientSocket.getInetAddress()));
+
                     // 处理文件传输
                     handleFileTransfer(clientSocket);
                     
@@ -67,19 +70,19 @@ public class FolderReceiver {
                     continue;
                 } catch (IOException e) {
                     if (isReceiving) {
-                        Log.e(TAG, "接受连接错误: " + e.getMessage());
+                        Log.e(TAG, context.getString(R.string.accept_connection_error, e.getMessage()));
                     }
                     break;
                 }
             }
         } catch (IOException e) {
-            Log.e(TAG, "服务器启动失败: " + e.getMessage());
-            showToast("服务器启动失败: " + e.getMessage());
+            Log.e(TAG, context.getString(R.string.server_start_failed, e.getMessage()));
+            showToast(context.getString(R.string.server_start_failed, e.getMessage()));
         } finally {
             closeServerSocket();
             isReceiving = false;
             dismissWaitingDialog();
-            Log.i(TAG, "接收服务已停止");
+            Log.i(TAG, context.getString(R.string.received_service_stopped));
         }
     }
     
@@ -88,9 +91,9 @@ public class FolderReceiver {
         int totalFiles = 0;
         int receivedFiles = 0;
         
-        Log.i(TAG, "开始接收文件，保存路径: " + baseDir);
-        updateProgressDialog("开始接收文件...", 0, 100);
-        
+        Log.i(TAG, context.getString(R.string.start_receive_file, baseDir));
+        updateProgressDialog(context.getString(R.string.start_receive_file_progress), 0, 100);
+
         try {
             InputStream inputStream = clientSocket.getInputStream();
             BufferedInputStream bis = new BufferedInputStream(inputStream);
@@ -99,13 +102,13 @@ public class FolderReceiver {
                 // 读取类型字节
                 int typeByte = bis.read();
                 if (typeByte == -1) {
-                    Log.i(TAG, "流结束，传输完成");
+                    Log.i(TAG, context.getString(R.string.stream_end_transfer_complete));
                     break; // 正常结束
                 }
                 
                 byte type = (byte) typeByte;
-                Log.d(TAG, "读取类型: " + type);
-                
+                Log.d(TAG, context.getString(R.string.read_type, type));
+
                 // 读取路径长度 (4字节，大端序)
                 byte[] pathLenBytes = readExactly(bis, 4);
                 if (pathLenBytes == null) break;
@@ -113,10 +116,10 @@ public class FolderReceiver {
                 int pathLength = ByteBuffer.wrap(pathLenBytes)
                                          .order(ByteOrder.BIG_ENDIAN)
                                          .getInt();
-                Log.d(TAG, "路径长度: " + pathLength);
-                
+                Log.d(TAG, context.getString(R.string.path_length, pathLength));
+
                 if (pathLength <= 0 || pathLength > 8192) {
-                    Log.e(TAG, "无效的路径长度: " + pathLength);
+                    Log.e(TAG, context.getString(R.string.invalid_path_length, pathLength));
                     break;
                 }
                 
@@ -125,8 +128,8 @@ public class FolderReceiver {
                 if (pathBytes == null) break;
                 
                 String relativePath = new String(pathBytes, "UTF-8");
-                Log.d(TAG, "相对路径: " + relativePath);
-                
+                Log.d(TAG, context.getString(R.string.relative_path, relativePath));
+
                 // 读取数据长度 (8字节，大端序)
                 byte[] dataLenBytes = readExactly(bis, 8);
                 if (dataLenBytes == null) break;
@@ -134,8 +137,8 @@ public class FolderReceiver {
                 long dataLength = ByteBuffer.wrap(dataLenBytes)
                                           .order(ByteOrder.BIG_ENDIAN)
                                           .getLong();
-                Log.d(TAG, "数据长度: " + dataLength);
-                
+                Log.d(TAG, context.getString(R.string.data_length, dataLength));
+
                 String fullPath = baseDir + File.separator + relativePath;
                 
                 if (type == TYPE_FILE) {
@@ -143,45 +146,45 @@ public class FolderReceiver {
                     receivedFiles++;
                     
                     // 更新UI
-                    final String status = String.format("接收文件: %s (%s)\n进度: %d/%d", 
+                    final String status = String.format(context.getString(R.string.receive_file_progress),
                             relativePath, formatFileSize(dataLength), receivedFiles, totalFiles);
                     
                     updateProgressDialog(status, (receivedFiles * 100) / Math.max(totalFiles, 1), 100);
                     
-                    Log.i(TAG, "接收文件: " + relativePath + " 大小: " + dataLength + " bytes");
-                    
+                    Log.i(TAG, context.getString(R.string.receive_file, relativePath, dataLength));
+
                     // 创建父目录
                     File file = new File(fullPath);
                     File parentDir = file.getParentFile();
                     if (parentDir != null && !parentDir.exists()) {
                         if (!parentDir.mkdirs()) {
-                            Log.e(TAG, "创建目录失败: " + parentDir.getAbsolutePath());
+                            Log.e(TAG, context.getString(R.string.create_dir_failed, parentDir.getAbsolutePath()));
                             break;
                         }
                     }
                     
                     // 接收文件内容
                     if (!receiveFileContent(bis, file, dataLength)) {
-                        Log.e(TAG, "文件内容接收失败: " + relativePath);
+                        Log.e(TAG, context.getString(R.string.file_content_receive_failed, relativePath));
                         break;
                     }
                     
-                    Log.i(TAG, "文件接收完成: " + relativePath);
-                    
+                    Log.i(TAG, context.getString(R.string.file_receive_complete, relativePath));
+
                 } else if (type == TYPE_DIRECTORY) {
-                    Log.i(TAG, "创建目录: " + relativePath);
-                    
+                    Log.i(TAG, context.getString(R.string.create_dir, relativePath));
+
                     File dir = new File(fullPath);
                     if (!dir.exists() && !dir.mkdirs()) {
-                        Log.e(TAG, "创建目录失败: " + fullPath);
+                        Log.e(TAG, context.getString(R.string.create_dir_failed, fullPath));
                         break;
                     }
                     
                     // 更新UI显示目录创建
-                    updateProgressDialog("创建目录: " + relativePath, 
+                    updateProgressDialog(String.format(context.getString(R.string.create_dir_progress), relativePath),
                                        (receivedFiles * 100) / Math.max(totalFiles, 1), 100);
                 } else {
-                    Log.e(TAG, "未知的类型: " + type);
+                    Log.e(TAG, context.getString(R.string.unknown_type, type));
                     break;
                 }
             }
@@ -190,21 +193,20 @@ public class FolderReceiver {
             if (isReceiving) {
                 final int finalReceived = receivedFiles;
                 mainHandler.post(() -> {
-                    showToast("文件接收完成，共接收 " + finalReceived + " 个文件");
-                    // 恢复等待状态
-                    showWaitingDialog("准备接收下一次传输...");
+                    showToast(context.getString(R.string.file_receive_complete_count, finalReceived));
+                    showWaitingDialog(context.getString(R.string.prepare_next_transfer));
                 });
-                Log.i(TAG, "文件接收完成，总计: " + receivedFiles + " 个文件");
+                Log.i(TAG, context.getString(R.string.file_receive_complete_total, receivedFiles));
             }
             
         } catch (IOException e) {
-            Log.e(TAG, "文件传输错误: " + e.getMessage());
-            showToast("文件接收错误: " + e.getMessage());
+            Log.e(TAG, context.getString(R.string.file_transfer_error, e.getMessage()));
+            showToast(context.getString(R.string.file_receive_error, e.getMessage()));
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "关闭客户端socket错误: " + e.getMessage());
+                Log.e(TAG, context.getString(R.string.close_client_socket_error, e.getMessage()));
             }
         }
     }
@@ -216,7 +218,7 @@ public class FolderReceiver {
         while (totalRead < length && isReceiving) {
             int read = is.read(buffer, totalRead, length - totalRead);
             if (read == -1) {
-                Log.e(TAG, "流提前结束，期望读取 " + length + " 字节，实际读取 " + totalRead + " 字节");
+                Log.e(TAG, context.getString(R.string.stream_early_end, length, totalRead));
                 return null;
             }
             totalRead += read;
@@ -235,7 +237,7 @@ public class FolderReceiver {
                 int read = is.read(buffer, 0, toRead);
                 
                 if (read == -1) {
-                    Log.e(TAG, "文件内容读取提前结束");
+                    Log.e(TAG, context.getString(R.string.file_content_read_early_end));
                     return false;
                 }
                 
@@ -245,13 +247,13 @@ public class FolderReceiver {
                 // 大文件进度更新（每1MB更新一次）
                 if (dataLength > 1024 * 1024 && totalRead % (1024 * 1024) == 0) {
                     int progress = (int) ((totalRead * 100) / dataLength);
-                    Log.d(TAG, "文件传输进度: " + progress + "%");
+                    Log.d(TAG, context.getString(R.string.file_transfer_progress, progress));
                 }
             }
             
             return totalRead == dataLength;
         } catch (IOException e) {
-            Log.e(TAG, "写入文件错误: " + e.getMessage());
+            Log.e(TAG, context.getString(R.string.write_file_error, e.getMessage()));
             return false;
         }
     }
@@ -283,7 +285,7 @@ public class FolderReceiver {
         mainHandler.post(() -> {
             if (progressDialog == null) {
                 progressDialog = new ProgressDialog(context);
-                progressDialog.setTitle("应用数据接收");
+                progressDialog.setTitle(context.getString(R.string.app_data_receiving));
                 progressDialog.setCancelable(true);
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.setOnCancelListener(dialog -> stopReceiving());

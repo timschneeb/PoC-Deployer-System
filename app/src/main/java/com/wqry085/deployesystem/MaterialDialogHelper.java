@@ -245,17 +245,17 @@ public class MaterialDialogHelper {
         new MaterialDialogHelper(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("确定", null)
+                .setPositiveButton(context.getString(R.string.ok), null)
                 .show();
     }
 
-    public static void showConfirmDialog(Context context, String title, String message, 
+    public static void showConfirmDialog(Context context, String title, String message,
                                         DialogInterface.OnClickListener confirmListener) {
         new MaterialDialogHelper(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("确认", confirmListener)
-                .setNegativeButton("取消", null)
+                .setPositiveButton(context.getString(R.string.confirm), confirmListener)
+                .setNegativeButton(context.getString(R.string.cancel), null)
                 .show();
     }
 }

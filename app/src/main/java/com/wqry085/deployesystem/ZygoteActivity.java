@@ -180,7 +180,7 @@ if (shouldCheckUpdate) {
             logSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {});
 
             builder.setView(dialogView);
-            builder.setPositiveButton("应用", (dialog, which) -> {
+            builder.setPositiveButton(getString(R.string.apply), (dialog, which) -> {
                 if (logSwitch.isChecked()) {
                     new Thread(() -> {
                         if (Shizuku.getUid() == 0) {
@@ -198,7 +198,7 @@ if (shouldCheckUpdate) {
                 }
             });
 
-            builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+            builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
             return true;
@@ -253,7 +253,7 @@ void checkForUpdates() {
             JSONObject json = new JSONObject(jsonText);
             int latestCode = json.getInt("version_code");
             String latestVersion = json.getString("latest_version");
-            String changelog = json.optString("update_log", "无更新说明");
+            String changelog = json.optString("update_log", getString(R.string.no_update_log));
             String downloadLink = json.optString("update_url", "");
             boolean force = json.optBoolean("force_update", false);
 
@@ -272,27 +272,27 @@ void checkForUpdates() {
                 });
             } else {
                 new Handler(Looper.getMainLooper()).post(() ->
-                        showToast("当前已是最新版本"));
+                        showToast(getString(R.string.latest_version)));
             }
 
         } catch (Exception e) {
             new Handler(Looper.getMainLooper()).post(() ->
-                    showToast("检查更新失败：" + e.getMessage()));
+    showToast(getString(R.string.check_update_failed_with_reason, e.getMessage())));
         }
     }).start();
 }
 
 private void showUpdateDialog(String version, String log, String url, boolean force) {
     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-    builder.setTitle("发现新版本 v" + version);
+    builder.setTitle(String.format(getString(R.string.update_found), version));
     builder.setMessage(log);
 
-    builder.setPositiveButton("立即下载", (dialog, which) -> {
+    builder.setPositiveButton(getString(R.string.download_now), (dialog, which) -> {
         startDownload(url, version, force);
     });
 
     if (!force) {
-        builder.setNegativeButton("稍后再说", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.download_later), (dialog, which) -> dialog.dismiss());
     } else {
         builder.setCancelable(false);
     }
@@ -303,7 +303,7 @@ private void showUpdateDialog(String version, String log, String url, boolean fo
 private void startDownload(String url, String version, boolean force) {
     // MD3 风格进度对话框
     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-    builder.setTitle("正在下载更新 v" + version);
+    builder.setTitle(String.format(getString(R.string.downloading_update), version));
     builder.setCancelable(false);
 
     LinearProgressIndicator progressIndicator = new LinearProgressIndicator(this);
@@ -345,13 +345,13 @@ private void startDownload(String url, String version, boolean force) {
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 progressDialog.dismiss();
-                showInstallDialog(version, "下载完成！是否立即安装？", outputFile, force, false);
+                showInstallDialog(version, getString(R.string.download_complete_prompt), outputFile, force, false);
             });
 
         } catch (Exception e) {
             new Handler(Looper.getMainLooper()).post(() -> {
                 progressDialog.dismiss();
-                showToast("下载失败：" + e.getMessage());
+                showToast(getString(R.string.download_failed_with_reason, e.getMessage()));
             });
         }
     }).start();
@@ -359,10 +359,10 @@ private void startDownload(String url, String version, boolean force) {
 
 private void showInstallDialog(String version, String log, File apkFile, boolean force, boolean cached) {
     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-    builder.setTitle(cached ? "已下载更新 v" + version : "下载完成");
-    builder.setMessage(cached ? "检测到已下载的更新包，是否安装？" : log);
+    builder.setTitle(cached ? String.format(getString(R.string.already_downloaded_update), version) : getString(R.string.download_complete_title));
+    builder.setMessage(cached ? getString(R.string.detected_downloaded_update) : log);
 
-    builder.setPositiveButton("安装", (dialog, which) -> {
+    builder.setPositiveButton(getString(R.string.install), (dialog, which) -> {
         try {
             Uri uri = FileProvider.getUriForFile(
                     this, getPackageName() + ".provider", apkFile);
@@ -371,12 +371,12 @@ private void showInstallDialog(String version, String log, File apkFile, boolean
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(intent);
         } catch (Exception e) {
-            showToast("无法启动安装：" + e.getMessage());
+            showToast(getString(R.string.install_failed_with_reason, e.getMessage()));
         }
     });
 
     if (!force) {
-        builder.setNegativeButton("稍后安装", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.install_later), (dialog, which) -> dialog.dismiss());
     } else {
         builder.setCancelable(false);
     }

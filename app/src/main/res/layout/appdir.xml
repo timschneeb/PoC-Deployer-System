@@ -14,7 +14,7 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="输入应用包名">
+        android:hint="@string/input_app_package">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text"
@@ -24,9 +24,9 @@
             android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
-<TextView
-    android:layout_width="match_parent"
-        android:text="\n此功能成功率一般\nzygote的fork请求可能会失败"
+    <TextView
+        android:layout_width="match_parent"
+        android:text="@string/appdir_hint"
         android:textColor="#F82323"
         android:layout_height="wrap_content"/>
 </LinearLayout>
