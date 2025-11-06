@@ -29,13 +29,13 @@ _____________________
 ## 功能展示
 
 ### uid/gid/groups注入功能
-![应用图片](https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a1.jpg)
+<img src="https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a1.jpg" alt="应用图片" width="200" />
 
 ### 高级功能界面
-![应用图片2](https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a2.jpg)
+<img src="https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a2.jpg" alt="应用图片2" width="200" />
 
 ### 反方向shell
-![应用图片3](https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a3.jpg)
+<img src="https://raw.githubusercontent.com/wqry085/PoC-Deployer-System/main/jpg/a3.jpg" alt="应用图片3" width="200" />
 
 ## 系统要求
 
