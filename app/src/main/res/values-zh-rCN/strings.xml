@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">PoC-Deployer-System</string>
     <string name="bootloader_title">引导加载</string>
-    <string name="bootloader_initializing">初始化中...</string>
+    <string name="bootloader_initializing">初始化中…</string>
     <string name="storage_permission_granted">存储权限已获取</string>
-    <string name="processing_shizuku_permission">正在处理 Shizuku 权限...</string>
+    <string name="processing_shizuku_permission">正在处理 Shizuku 权限…</string>
     <string name="shizuku_grant_prompt">\n请在 Shizuku Manager 中授权后重启此界面。</string>
-    <string name="shizuku_permission_check_passed">\nShizuku 权限检查通过，开始检测设备可用性...</string>
+    <string name="shizuku_permission_check_passed">\nShizuku 权限检查通过，开始检测设备可用性…</string>
     <string name="vulnerable_result">\n检测结果: 设备可能存在漏洞（可利用）</string>
     <string name="patched_result">\n检测结果: 漏洞已修复</string>
     <string name="next_boot_mode_title">选择启动方式</string>
     <string name="next_boot_mode_message">您希望下次启动时直接进入 载控台 吗？</string>
     <string name="next_boot_mode_positive">是下次直接进入</string>
     <string name="next_boot_mode_negative">否下次保留引导加载</string>
-    <string name="next_boot_saved">\n已保存选择，即将跳转...</string>
+    <string name="next_boot_saved">\n已保存选择，即将跳转…</string>
     <string name="apply">应用</string>
     <string name="cancel">取消</string>
     <string name="no_update_log">无更新说明</string>
@@ -60,7 +61,7 @@
     <string name="developer_home">开发者酷安主页</string>
     <string name="project">项目</string>
     <string name="plugin_file_not_exist">插件文件不存在</string>
-    <string name="loading_plugin_list">正在加载插件列表...</string>
+    <string name="loading_plugin_list">正在加载插件列表…</string>
     <string name="load_failed_check_network">加载失败，请检查网络</string>
     <string name="retry">重试</string>
     <string name="download">下载</string>
@@ -97,13 +98,13 @@
     <string name="load_payload_failed">加载payload失败</string>
     <string name="readonly_config_filename">只读配置.txt</string>
     <string name="vuln_deploy_end">漏洞部署结束: </string>
-    <string name="waiting_client_connection">等待客户端连接端口 %1$d...</string>
+    <string name="waiting_client_connection">等待客户端连接端口 %1$d…</string>
     <string name="start_listen_port">开始监听端口 %1$d</string>
     <string name="client_connected">客户端已连接: %1$s</string>
     <string name="accept_connection_error">接受连接错误: %1$s</string>
     <string name="server_start_failed">服务器启动失败: %1$s</string>
     <string name="start_receive_file">开始接收文件，保存路径: %1$s</string>
-    <string name="start_receive_file_progress">开始接收文件...</string>
+    <string name="start_receive_file_progress">开始接收文件…</string>
     <string name="stream_end_transfer_complete">流结束，传输完成</string>
     <string name="read_type">读取类型: %1$d</string>
     <string name="path_length">路径长度: %1$d</string>
@@ -120,7 +121,7 @@
     <string name="create_dir_progress">创建目录: %1$s</string>
     <string name="unknown_type">未知的类型: %1$d</string>
     <string name="file_receive_complete_count">文件接收完成，共接收 %1$d 个文件</string>
-    <string name="prepare_next_transfer">准备接收下一次传输...</string>
+    <string name="prepare_next_transfer">准备接收下一次传输…</string>
     <string name="file_receive_complete_total">文件接收完成，总计: %1$d 个文件</string>
     <string name="file_transfer_error">文件传输错误: %1$s</string>
     <string name="file_receive_error">文件接收错误: %1$s</string>
@@ -129,7 +130,6 @@
     <string name="file_content_read_early_end">文件内容读取提前结束</string>
     <string name="file_transfer_progress">文件传输进度: %1$d%%</string>
     <string name="write_file_error">写入文件错误: %1$s</string>
-    <string name="version_name">v1.4-alpha02</string>
     <string name="tool_description">漏洞 CVE-2024-31317 使用工具</string>
     <string name="feedback_message">此版本为测试版，目的是收集报告。
 请将你遇到的问题反馈至：wqry085super@gmail.com</string>
@@ -141,7 +141,7 @@
     <string name="close">关闭</string>
     <string name="command_end_exit_code">\n命令结束, exitCode: %1$d</string>
     <string name="deploying_terminal_env">=== 正在部署终端环境 ===</string>
-    <string name="please_wait">请稍候，这可能需要一些时间...</string>
+    <string name="please_wait">请稍候，这可能需要一些时间…</string>
     <string name="deploy_complete">=== 部署完成 ===</string>
     <string name="deploy_failed">=== 环境部署失败 ===</string>
     <string name="basic_system_mode">您当前处于基础系统模式。</string>
